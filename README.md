@@ -12,13 +12,14 @@ The **Grocery Tracker and Recommendation Generator** is an AI-powered web applic
 ## Links to Diagrams
 Here are the essential diagrams for the project:
 1. [**Overall System Architecture Diagram**]
-2. [**AI/ML Model Diagram**] https://github.com/jrochanav/CapstoneProject/blob/main/docs/diagrams/AIML%20Model%20Diagram.png
-3. [**Application Interface Wireframe**]
+https://lucid.app/lucidchart/1edff0d6-f470-4513-8583-cbc2a06815d1/edit?viewport_loc=128%2C-780%2C4075%2C2923%2C0_0&invitationId=inv_dbac88ab-aaaf-4520-99d5-d24ddf998a14
+3. [**AI/ML Model Diagram**] https://github.com/jrochanav/CapstoneProject/blob/main/docs/diagrams/AIML%20Model%20Diagram.png
+4. [**Application Interface Wireframe**]
 
 ## Team Member Roles
 - **UI/UX & testing**: Joan Rocha - (write something here)
 - **AI Model Developer**: Chuheng Xiao - Designed prompts and workflow for image recognition using the Gemini 1.5 model, integrated AI-driven features for grocery recommendations and recipe generation, and contributed to the development of the Streamlit application.
-- ** **: Katy Bohanan - (write something here)
+- **Back-end**: Katy Bohanan - working on database integration and designing the system architecture to ensure seamless data processing and model execution.
 
 ## GitHub Repository
 - [GitHub Repository Link]https://github.com/jrochanav/CapstoneProject
