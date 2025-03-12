@@ -17,7 +17,7 @@ https://lucid.app/lucidchart/1edff0d6-f470-4513-8583-cbc2a06815d1/edit?viewport_
 4. [**Application Interface Wireframe**]https://github.com/jrochanav/CapstoneProject/blob/main/docs/diagrams/Application%20Interface%20Wireframe.png
 
 ## Team Member Roles
-- **UI/UX & testing**: Joan Rocha - (write something here)
+- **UI/UX & testing**: Joan Rocha - Developing the Streamlit application for testing back-end and Gemini 1.5 model.
 - **AI Model Developer**: Chuheng Xiao - Designed prompts and workflow for image recognition using the Gemini 1.5 model, integrated AI-driven features for grocery recommendations and recipe generation, and contributed to the development of the Streamlit application.
 - **Back-end**: Katy Bohanan - working on database integration and designing the system architecture to ensure seamless data processing and model execution.
 
