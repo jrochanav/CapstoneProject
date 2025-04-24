@@ -8,6 +8,8 @@ The **Grocery Tracker and Recommendation Generator** is an AI-powered web applic
 - **Manual Input**: Users can also manually enter grocery items.
 - **Grocery List Management**: Users can edit, remove, and track quantities of items.
 - **AI-Powered Recommendations**: Generate grocery improvement suggestions or recipe ideas based on the current list.
+- **Dish-to-Ingredient Retrieval**: Users can input a dish name and receive a list of required ingredients.
+- **Ingredient-to-Dish Suggestions**: Based on available ingredients, the system recommends possible dishes and lists additional needed items.
 
 ## Links to Diagrams
 Here are the essential diagrams for the project:
