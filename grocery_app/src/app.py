@@ -1,5 +1,6 @@
 #import uuid
 import streamlit as st
+from uuid import uuid4
 import numpy as np
 from PIL import Image
 from user_management import get_user_id, load_user, save_user_preferences, load_grocery_list, save_grocery_list
@@ -7,16 +8,103 @@ from api_client import (get_nutritional_info, get_gemini_response, generate_groc
                         generate_recipe, extract_food_name, generate_dish_ingredients_or_recipes)
 from helper_functions import parse_missing_ingredients_from_text
 
-user_id = get_user_id()  # Get the user ID
+st.title("Smart Pantry: AI Recommendations & Recipe Helper")
+
+user_id = get_user_id()
 
 # Load user data from MongoDB
 user_doc = load_user(user_id)
 preferences = user_doc.get("preferences", {})
 
+# Inject CSS globally
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
+
+/* Apply Nunito font globally */
+html, body, [class*="st-"], * {
+    font-family: 'Nunito', sans-serif !important;
+}
+
+html, body, [class*="st-"] {
+    background-color: #F5E6C4 !important; /* Warm Beige */
+    color: #000000 !important; /* Black font for all text */
+}
+
+h1, h2 {
+    color: #4CAF50 !important; /* Fresh Green for titles */
+    font-size: 36px !important;
+    font-weight: 700 !important;
+}
+
+/* BUTTON STYLING */
+button, .stButton>button, .stFileUploader>div>div>button {
+    background-color: #F5E6C4 !important;
+    color: #4CAF50 !important;
+    border: 2px solid #4CAF50 !important;
+    border-radius: 25px !important;
+    font-size: 18px !important;
+    padding: 12px 24px !important;
+}
+
+button div, .stButton>button div, .stFileUploader>div>div>button div {
+    background: transparent !important;
+}
+
+button:hover, .stButton>button:hover, .stFileUploader>div>div>button:hover {
+    background-color: #A6E22E !important;
+    color: black !important;
+    box-shadow: 0px 0px 8px rgba(166, 226, 46, 0.8) !important;
+}
+
+button:hover div, .stButton>button:hover div, .stFileUploader>div>div>button:hover div {
+    background: transparent !important;
+}
+
+button:active, .stButton>button:active, .stFileUploader>div>div>button:active {
+    background-color: #8DC81C !important;
+    transform: scale(0.98) !important;
+}
+
+button:focus, .stButton>button:focus, .stFileUploader>div>div>button:focus {
+    outline: none !important;
+}
+
+/* Input fields */
+.stTextInput>div>div>input, .stTextArea>div>textarea, .stNumberInput>div>div>input {
+    font-family: 'Nunito', sans-serif !important;
+    border-radius: 5px !important;
+    border: 1px 4CAF50 solid;
+    padding: 8px !important;
+}
+
+/* Expander (for grocery list items) */
+.stExpander {
+    background-color: #B388EB !important; /* Soft Lavender */
+    border-radius: 10px !important;
+}
+
+.stExpander>summary {
+    font-weight: 600 !important;
+    font-size: 18px !important;
+}
+
+.stMarkdown h2, .stMarkdown h3 {
+    color: #4CAF50 !important; /* Fresh Green */
+}
+</style>
+""", unsafe_allow_html=True)
+
 # Check if the user is new or not
 is_new_user = not preferences or not preferences.get("first_name")
 
+grocery_list = load_grocery_list(user_id)
+
 if is_new_user:
+    st.markdown("""
+        ## Welcome to Grocery Tracker & AI Recommendations! 🛒
+        Help us tailor grocery suggestions to your needs by providing some optional details!
+    """)
     # Form for User Preferences
     with st.form("user_info_form"):
         st.write("### Personal Information")
@@ -67,7 +155,12 @@ if is_new_user:
             st.session_state.show_welcome = True  # Show welcome popup after saving
             st.rerun()
 
+
+
 else:
+    if "input_mode" not in st.session_state:
+        st.session_state.input_mode = "manual" 
+
     col1, col2 = st.columns(2)
     with col1:
         if st.button("📸\n**Upload a Photo**", key="upload_btn", help="Upload an image of your groceries"):
@@ -75,8 +168,6 @@ else:
     with col2:
         if st.button("✍️\n**Input Manually**", key="manual_btn", help="Manually enter grocery details"):
             st.session_state.input_mode = "manual"
-
-    grocery_list = load_grocery_list(user_id)
 
     # Upload Mode
     if st.session_state.input_mode == "upload":
@@ -135,7 +226,8 @@ else:
 
         if st.button("Add Item"):
             if manual_name:
-                st.session_state.grocery_list.append({"name": manual_name, "description": manual_description, "quantity": manual_quantity})
+                grocery_list.append({"name": manual_name, "description": manual_description, "quantity": manual_quantity})
+                save_grocery_list(user_id, grocery_list)
                 st.session_state.input_mode = None  # Hide input section after adding
                 st.success(f"Added {manual_name} to the list!")
                 st.rerun()
@@ -144,7 +236,7 @@ else:
 
     # Display the grocery list
     st.write("### Your Pantry:")
-    for i, item in enumerate(st.session_state.grocery_list):
+    for i, item in enumerate(grocery_list):
         with st.expander(f"{item['name']} (x{item['quantity']})"):
             edited_name = st.text_input("Edit Name", value=item["name"], key=f"edit_name_{i}")
             edited_description = st.text_area("Edit Description", value=item["description"], key=f"edit_desc_{i}")
@@ -157,11 +249,11 @@ else:
             )
             # Save
             if st.button("Save Changes", key=f"save_{i}_{item['name'].replace(' ', '_')}"):
-                st.session_state.grocery_list[i] = {"name": edited_name, "description": edited_description, "quantity": edited_quantity}
+                grocery_list[i] = {"name": edited_name, "description": edited_description, "quantity": edited_quantity}
                 st.success("Item updated!")
             # Delete
             if st.button("Delete Item", key=f"delete_{i}_{id(item)}"):
-                del st.session_state.grocery_list[i]
+                del grocery_list[i]
                 st.success("Item removed!")
                 st.rerun()
 
