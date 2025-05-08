@@ -1,0 +1,7 @@
+streamlit
+requests
+Pillow
+numpy
+pymongo
+python-dotenv
+google.generativeai
